@@ -1,4 +1,15 @@
+from enum import Enum
+
 from leafnode import LeafNode
+
+
+class TextType(Enum):
+    TEXT = "text"
+    BOLD = "bold"
+    ITALIC = "italic"
+    CODE = "code"
+    LINK = "link"
+    IMAGE = "image"
 
 
 class TextNode:
@@ -21,17 +32,17 @@ class TextNode:
 
 
 def text_node_to_html(text_node):
-    if text_node.text_type == "text":
+    if text_node.text_type == TextType.TEXT.value:
         return LeafNode(None, text_node.text)
-    elif text_node.text_type == "bold":
+    elif text_node.text_type == TextType.BOLD.value:
         return LeafNode("b", text_node.text)
-    elif text_node.text_type == "italic":
+    elif text_node.text_type == TextType.ITALIC.value:
         return LeafNode("i", text_node.text)
-    elif text_node.text_type == "code":
+    elif text_node.text_type == TextType.CODE.value:
         return LeafNode("code", text_node.text)
-    elif text_node.text_type == "link":
+    elif text_node.text_type == TextType.LINK.value:
         return LeafNode("a", text_node.text, {"href": text_node.url})
-    elif text_node.text_type == "image":
+    elif text_node.text_type == TextType.IMAGE.value:
         return LeafNode(
             "i", text_node.text, {"alt": text_node.text, "src": text_node.url}
         )
