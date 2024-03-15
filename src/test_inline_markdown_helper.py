@@ -1,6 +1,10 @@
 import unittest
 
-from inline_text_helper import split_nodes_delimiter
+from inline_text_helper import (
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_delimiter,
+)
 from leafnode import LeafNode
 from textnode import TextNode, TextType
 
@@ -107,6 +111,84 @@ class TestInlineTextHelper(unittest.TestCase):
                 TextNode(" and some text", TextType.TEXT.value),
                 TextNode("This is text with a code section", TextType.CODE.value),
                 LeafNode("b", "Im some bold text"),
+            ],
+        )
+
+    def test_extract_single_image(self):
+        extracted_images = extract_markdown_images(
+            "![alt text](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)"
+        )
+
+        self.assertEqual(
+            extracted_images,
+            [
+                (
+                    "alt text",
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                )
+            ],
+        )
+
+    def test_extract_multi_image(self):
+        extracted_images = extract_markdown_images(
+            "![alt text](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png) and ![another](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)"
+        )
+
+        self.assertEqual(
+            extracted_images,
+            [
+                (
+                    "alt text",
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+                (
+                    "another",
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+            ],
+        )
+
+    def test_extract_single_image_link(self):
+        extracted_images = extract_markdown_images(
+            "[alt text](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)"
+        )
+
+        self.assertEqual(
+            extracted_images,
+            [],
+        )
+
+    def test_extract_single_link(self):
+        extracted_images = extract_markdown_links(
+            "[link](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)"
+        )
+
+        self.assertEqual(
+            extracted_images,
+            [
+                (
+                    "link",
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+            ],
+        )
+
+    def test_extract_multi_link(self):
+        extracted_images = extract_markdown_links(
+            "[link](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png) and [another link](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)"
+        )
+
+        self.assertEqual(
+            extracted_images,
+            [
+                (
+                    "link",
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+                (
+                    "another link",
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
             ],
         )
 
