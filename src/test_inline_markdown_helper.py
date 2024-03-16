@@ -4,6 +4,9 @@ from inline_text_helper import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_delimiter,
+    split_nodes_image,
+    split_nodes_link,
+    text_to_text_nodes,
 )
 from leafnode import LeafNode
 from textnode import TextNode, TextType
@@ -54,7 +57,7 @@ class TestInlineTextHelper(unittest.TestCase):
         text_1 = [
             TextNode(
                 "`This is text with one code section` and some text",
-                TextType.CODE.value,
+                TextType.TEXT.value,
             )
         ]
 
@@ -71,7 +74,7 @@ class TestInlineTextHelper(unittest.TestCase):
         text_1 = [
             TextNode(
                 " *This is text with one italic section* with text and empty space at start",
-                TextType.ITALIC.value,
+                TextType.TEXT.value,
             )
         ]
 
@@ -88,20 +91,15 @@ class TestInlineTextHelper(unittest.TestCase):
     def test_delim_multi_node(self):
         text_1 = TextNode(
             "`This is text with one code section` and some text",
-            TextType.CODE.value,
+            TextType.TEXT.value,
         )
 
         text_2 = TextNode(
             "`This is text with a code section`",
-            TextType.CODE.value,
+            TextType.TEXT.value,
         )
 
-        leaf_node = LeafNode(
-            "b",
-            "Im some bold text",
-        )
-
-        nodes = [text_1, text_2, leaf_node]
+        nodes = [text_1, text_2]
 
         new_nodes = split_nodes_delimiter(nodes, "`", TextType.CODE.value)
         self.assertEqual(
@@ -110,7 +108,6 @@ class TestInlineTextHelper(unittest.TestCase):
                 TextNode("This is text with one code section", TextType.CODE.value),
                 TextNode(" and some text", TextType.TEXT.value),
                 TextNode("This is text with a code section", TextType.CODE.value),
-                LeafNode("b", "Im some bold text"),
             ],
         )
 
@@ -189,6 +186,118 @@ class TestInlineTextHelper(unittest.TestCase):
                     "another link",
                     "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
                 ),
+            ],
+        )
+
+    def test_split_node_double_image(self):
+        markdown_image = [
+            TextNode(
+                "This is an image ![alt text](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)",
+                TextType.TEXT.value,
+            )
+        ]
+        new_nodes = split_nodes_image(markdown_image)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is an image ", TextType.TEXT.value),
+                TextNode(
+                    "alt text",
+                    TextType.IMAGE.value,
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+            ],
+        )
+
+    def test_split_node_images(self):
+        markdown_image = [
+            TextNode(
+                "This is an image ![alt text](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png) and ![another](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png) This is the end of the text",
+                TextType.TEXT.value,
+            )
+        ]
+        new_nodes = split_nodes_image(markdown_image)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is an image ", TextType.TEXT.value),
+                TextNode(
+                    "alt text",
+                    TextType.IMAGE.value,
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+                TextNode(" and ", TextType.TEXT.value),
+                TextNode(
+                    "another",
+                    TextType.IMAGE.value,
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+                TextNode(" This is the end of the text", TextType.TEXT.value),
+            ],
+        )
+
+    def test_split_node_image_no_empty_strings(self):
+        markdown_image = [
+            TextNode(
+                "![alt text](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png) and ![another](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)",
+                TextType.TEXT.value,
+            )
+        ]
+        new_nodes = split_nodes_image(markdown_image)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode(
+                    "alt text",
+                    TextType.IMAGE.value,
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+                TextNode(" and ", TextType.TEXT.value),
+                TextNode(
+                    "another",
+                    TextType.IMAGE.value,
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+            ],
+        )
+
+    def test_split_node_link(self):
+        markdown_link = [
+            TextNode(
+                "[link](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)",
+                TextType.TEXT.value,
+            )
+        ]
+        new_nodes = split_nodes_link(markdown_link)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode(
+                    "link",
+                    TextType.LINK.value,
+                    "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                ),
+            ],
+        )
+
+    def test_text_to_text_nodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        nodes = text_to_text_nodes(text)
+        self.assertEqual(
+            nodes,
+            [
+                TextNode("This is ", TextType.TEXT.value),
+                TextNode("text", TextType.BOLD.value),
+                TextNode(" with an ", TextType.TEXT.value),
+                TextNode("italic", TextType.ITALIC.value),
+                TextNode(" word and a ", TextType.TEXT.value),
+                TextNode("code block", TextType.CODE.value),
+                TextNode(" and an ", TextType.TEXT.value),
+                TextNode(
+                    "image", TextType.IMAGE.value, "https://i.imgur.com/zjjcJKZ.png"
+                ),
+                TextNode(" and a ", TextType.TEXT.value),
+                TextNode("link", TextType.LINK.value, "https://boot.dev"),
             ],
         )
 
