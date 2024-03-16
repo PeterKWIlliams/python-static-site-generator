@@ -1,6 +1,6 @@
 import unittest
 
-from inline_text_helper import (
+from inline_markdown_helper import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_delimiter,
@@ -8,7 +8,6 @@ from inline_text_helper import (
     split_nodes_link,
     text_to_text_nodes,
 )
-from leafnode import LeafNode
 from textnode import TextNode, TextType
 
 
