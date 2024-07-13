@@ -1,15 +1,15 @@
-from htmlnode import HTMLNode
-from leafnode import LeafNode
-from textnode import TextNode
+from generate_files import generate_files
+
+# os.path.exists
+# os.listdir
+# os.path.join
+# os.mkdir
+# shutil.copy
+# shutil.rmtree
 
 
 def main():
-    textnode = TextNode("This is the text node", "bold")
-    print(textnode.__repr__)
-    htmlnode = HTMLNode("div", "hello", None, {"target": "hello", "href": "hello"})
-    print(htmlnode.__repr__)
-    leafnode = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
-    print(leafnode.__repr__)
+    generate_files("static")
 
 
 main()
