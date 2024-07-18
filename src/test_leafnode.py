@@ -43,7 +43,7 @@ class TestLeafNode(unittest.TestCase):
 
         self.assertEqual(
             node1.to_html(),
-            "<div target=_blank href=https://www.google.com>Hello there!</div>",
+            '<div target="_blank" href="https://www.google.com">Hello there!</div>',
         )
 
     def test_to_html_no_tag(self):
@@ -65,7 +65,7 @@ class TestLeafNode(unittest.TestCase):
         )
 
         self.assertEqual(
-            node1.props_to_html(), " target=_blank href=https://www.google.com"
+            node1.props_to_html(), ' target="_blank" href="https://www.google.com"'
         )
 
 

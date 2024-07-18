@@ -10,14 +10,16 @@ class LeafNode(HTMLNode):
             raise ValueError("All leaf node require a value")
         if not self.tag:
             return self.value
-        leaf_html = f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+        # fmt: off
+        leaf_html = f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>'
+        # fmt: on
         return leaf_html
 
     def props_to_html(self):
         if self.props:
-            prop_str = " ".join(
-                [f"{prop_name}={self.props[prop_name]}" for prop_name in self.props]
+            prop_str = "".join(
+                [f' {prop_name}="{self.props[prop_name]}"' for prop_name in self.props]
             )
-            return " " + prop_str
+            return prop_str
 
         return ""

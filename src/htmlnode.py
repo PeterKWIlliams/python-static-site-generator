@@ -30,7 +30,9 @@ class HTMLNode:
         self.props = props
 
     def __repr__(self):
-        return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+        # fmt: off
+        return f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>'
+        # fmt: on
 
     def __eq__(self, other):
         return (
@@ -46,7 +48,7 @@ class HTMLNode:
     def props_to_html(self):
         if self.props:
             prop_str = " ".join(
-                [f"{prop_name}={self.props[prop_name]}" for prop_name in self.props]
+                [f'{prop_name}="{self.props[prop_name]}"' for prop_name in self.props]
             )
             return " " + prop_str
 

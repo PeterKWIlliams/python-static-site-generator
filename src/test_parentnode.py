@@ -20,7 +20,7 @@ class TestParentNode(unittest.TestCase):
 
         self.assertEqual(
             parent_node1.to_html(),
-            "<div target=_blank><p>Hello World</p><a target=_blank href=https://www.google.com>Click me</a></div>",
+            '<div target="_blank"><p>Hello World</p><a target="_blank" href="https://www.google.com">Click me</a></div>',
         )
 
     def test_to_html_single_child(self):
@@ -33,7 +33,7 @@ class TestParentNode(unittest.TestCase):
 
         self.assertEqual(
             parent_node1.to_html(),
-            "<div target=_blank><p>Hello World</p></div>",
+            '<div target="_blank"><p>Hello World</p></div>',
         )
 
     def test_to_html_nested_parent(self):
@@ -51,7 +51,7 @@ class TestParentNode(unittest.TestCase):
 
         self.assertEqual(
             parent_node2.to_html(),
-            "<div target=_blank><div target=_blank><p>Hello World</p></div></div>",
+            '<div target="_blank"><div target="_blank"><p>Hello World</p></div></div>',
         )
 
 

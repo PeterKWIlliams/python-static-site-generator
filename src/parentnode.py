@@ -12,14 +12,16 @@ class ParentNode(HTMLNode):
             raise ValueError("All parent nodes require children")
 
         child_html = "".join([child.to_html() for child in self.children])
-        parent_html = f"<{self.tag}{self.props_to_html()}>{child_html}</{self.tag}>"
+        # fmt: off
+        parent_html = f'<{self.tag}{self.props_to_html()}>{child_html}</{self.tag}>'
+        # fmt: on
         return parent_html
 
     def props_to_html(self):
         if self.props:
             prop_str = " ".join(
-                [f"{prop_name}={self.props[prop_name]}" for prop_name in self.props]
+                [f' {prop_name}="{self.props[prop_name]}"' for prop_name in self.props]
             )
-            return " " + prop_str
+            return prop_str
 
         return ""
