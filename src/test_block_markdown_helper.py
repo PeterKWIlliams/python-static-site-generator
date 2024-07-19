@@ -6,6 +6,7 @@ from block_markdown_helper import (
     check_if_ordered_list,
     check_if_quote,
     check_if_unordered_list,
+    extract_title,
     markdown_to_blocks,
     markdown_to_html_node,
 )
@@ -172,15 +173,29 @@ This is the same paragraph on a new line
 this is paragraph text
 
     """
-        print(markdown_to_blocks(md))
-
         node = markdown_to_html_node(md)
         html = node.to_html()
-        print(html)
         self.assertEqual(
             html,
             "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
         )
+
+    def test_extract_titile(self):
+        md = """
+# this is a title
+
+ extra text
+            """
+
+        self.assertEqual(extract_title(md), "this is a title")
+
+    def test_extract_tile_no_heading(self):
+        md = """
+this contains no h1 heading
+            """
+
+        with self.assertRaises(ValueError):
+            extract_title(md)
 
 
 if __name__ == "__main__":
