@@ -16,6 +16,14 @@ class BlockType(Enum):
     ORDERED_LIST = "ordered_list"
 
 
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        if block.startswith("# "):
+            return block[2:]
+    raise ValueError("No title found")
+
+
 def markdown_to_blocks(markdown_block):
     blocks = markdown_block.split("\n\n")
     new_markdown = []
@@ -29,6 +37,7 @@ def markdown_to_blocks(markdown_block):
 
 def markdown_to_html_node(markdown):
     markdown_blocks = markdown_to_blocks(markdown)
+    print(markdown_blocks)
     html_nodes = []
 
     for block in markdown_blocks:
@@ -39,7 +48,6 @@ def markdown_to_html_node(markdown):
 
 def markdown_to_html(markdown_block):
     block_type = block_to_block_type(markdown_block)
-    print(block_type)
 
     if block_type == BlockType.HEADING.value:
         return heading_block_to_html(markdown_block)
